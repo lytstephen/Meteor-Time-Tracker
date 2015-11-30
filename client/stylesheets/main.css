@@ -1,0 +1,37 @@
+/* --- Sticky Footer STARTS --- */
+html, body {
+    height: 100%;
+}
+
+#wrapper {
+    min-height: 100%;
+    margin-bottom: -50px;
+}
+
+#wrapper:after {
+    content: "";
+    display: block;
+}
+
+#footer, #wrapper:after {
+    height: 50px;
+}
+/* --- Sticky Footer ENDS --- */
+
+body {
+    padding-top: 80px;
+}
+
+.navbar {
+    background-color: #333;
+    color: #ddd;
+}
+
+#footer {
+    background-color: #333;
+    color: #fff;
+}
+
+#footer .container {
+    padding-top: 15px;
+}
