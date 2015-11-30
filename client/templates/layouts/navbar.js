@@ -4,3 +4,9 @@ Template.Navbar.helpers({
     return (link == currentPath ? ' active' : '');
   }
 });
+
+Template.Navbar.events({
+  'click #logout': function() {
+    AccountsTemplates.logout();
+  }
+});
