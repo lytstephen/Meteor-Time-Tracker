@@ -1,0 +1,21 @@
+.task-list button {
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+.task-list i {
+    margin-right: 5px;
+}
+
+.btn.note {
+    margin: 0 0 0 12px;
+}
+
+.project-header button {
+    width: 150px;
+    margin-bottom: 15px;
+}
+
+/*.col-md-7 {*/
+    /*padding-left: 25px;*/
+/*}*/
