@@ -29,13 +29,13 @@ Template.Dashboard.events({
     var hideArchive = function() {
       showIcon.addClass('fa-plus-circle');
       showIcon.removeClass('fa-minus-circle');
-      archivedProjects.hide();
+      archivedProjects.hide('fast');
       Session.set('showingArchived', false);
     };
     var showArchive = function() {
       showIcon.removeClass('fa-plus-circle');
       showIcon.addClass('fa-minus-circle');
-      archivedProjects.show();
+      archivedProjects.show('fast');
       Session.set('showingArchived', true);
     };
 
