@@ -14,12 +14,20 @@
 
         <ul class="nav nav-pills nav-stacked">
             {{#each projects}}
-                <li role="presentation"><a href="#" class="project-nav" data-id="{{_id}}">{{name}}</a></li>
+                <li role="presentation" class="{{activeProject}}"><a href="#" class="project-nav" data-id="{{_id}}">{{name}}</a></li>
             {{/each}}
-            <li role="presentation"><a href="#">
-                <i class="fa fa-plus-circle"></i> Show Archived Projects</a>
+            <li role="presentation"><a href="#" class="show-archived">
+                <i class="fa fa-plus-circle show-icon"></i> {{showArchivedText}}</a>
             </li>
         </ul>
+        <div class="archived-projects">
+            <ul class="nav nav-pills nav-stacked">
+                {{#each archivedProjects}}
+                    <li role="presentation" class="{{activeProject}}"><a href="#" class="project-nav" data-id="{{_id}}">{{name}}</a></li>
+                {{/each}}
+            </ul>
+        </div>
+
 
     </div>
 
@@ -31,8 +39,8 @@
                 <h4>Total Time: 13 hours 42 minutes</h4>
             </div>
             <div class="col-md-3 text-right">
-                <button type="button" class="btn btn-primary">Archive Project</button>
-                <button type="button" class="btn btn-danger">Delete Project</button>
+                <button type="button" class="btn btn-primary" id="archive-project">Archive Project</button>
+                <button type="button" class="btn btn-danger" id="delete-project">Delete Project</button>
             </div>
         </section>
 

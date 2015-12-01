@@ -25,3 +25,7 @@
 #project-name:focus {
     cursor: default;
 }
+
+.archived-projects {
+    display: none;
+}
