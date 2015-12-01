@@ -6,8 +6,7 @@ Template.Dashboard.events({
 
     var doc = {
       userId: Meteor.userId(),
-      name: projectName,
-      order: numProjects + 1
+      name: projectName
     };
 
     Projects.insert(doc);
@@ -34,7 +33,7 @@ Template.Dashboard.events({
 Template.Dashboard.helpers({
 
   projects: function() {
-    return Projects.find({archived: false}, {sort: {order: 1}});
+    return Projects.find({archived: false}, {sort: {createdAt: -1}});
   },
 
   currentProject: function() {
