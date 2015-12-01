@@ -16,6 +16,12 @@
     margin-bottom: 15px;
 }
 
-/*.col-md-7 {*/
-    /*padding-left: 25px;*/
-/*}*/
+#project-name {
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    width: 100%;
+}
+#project-name:focus {
+    cursor: default;
+}
