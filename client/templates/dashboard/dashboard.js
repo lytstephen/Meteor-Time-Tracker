@@ -1,40 +1,66 @@
+var Dashboard = {};
+
+Dashboard.addProject = function(projectTextField) {
+  var projectName = projectTextField.val();
+
+  var doc = {
+    userId: Meteor.userId(),
+    name: projectName,
+    archived: false
+  };
+
+  Projects.insert(doc);
+  projectTextField.val('');
+};
+
+Dashboard.addTask = function(taskTextField) {
+  var taskName = taskTextField.val();
+  var numTasks = Tasks.find().count();
+  var projectId = Session.get('currentProjectId');
+
+  if (projectId) {
+    var doc = {
+      projectId: projectId,
+      name: taskName,
+      order: numTasks + 1,
+      done: false
+    };
+
+    Tasks.insert(doc);
+    taskTextField.val('');
+  }
+};
+
 Template.Dashboard.events({
 
   // -------- CREATE -------- //
   'click #add-project': function(e) {
     var projectTextField = $('#add-project-text');
-    var projectName = projectTextField.val();
+    Dashboard.addProject(projectTextField);
+  },
 
-    var doc = {
-      userId: Meteor.userId(),
-      name: projectName,
-      archived: false
-    };
+  'keypress input': function(e) {
+    // if enter is pressed on an input field
+    if (e.which === 13) {
 
-    Projects.insert(doc);
-    projectTextField.val('');
+      var fieldId = $(e.target).attr('id');
+
+      // add project
+      if (fieldId === 'add-project-text') {
+        var projectTextField = $('#add-project-text');
+        Dashboard.addProject(projectTextField);
+
+        // add task
+      } else if (fieldId === 'add-task-text') {
+        var taskTextField = $('#add-task-text');
+        Dashboard.addTask(taskTextField)
+      }
+    }
   },
 
   'click #add-task': function(e) {
     var taskTextField = $('#add-task-text');
-    var taskName = taskTextField.val();
-    var numTasks = Tasks.find().count();
-    var projectId = Session.get('currentProjectId');
-
-    if (projectId) {
-      var doc = {
-        projectId: projectId,
-        name: taskName,
-        order: numTasks + 1,
-        done: false
-      };
-
-      Tasks.insert(doc);
-      taskTextField.val('');
-
-    } else {
-      alert('Please select a project first');
-    }
+    Dashboard.addTask(taskTextField);
   },
 
 
@@ -58,12 +84,12 @@ Template.Dashboard.events({
   'click #archive-project': function(e) {
     var currentProjectId = Session.get('currentProjectId');
     var currentlyArchived = Projects.findOne(currentProjectId).archived;
-    var button = $('#archive-project');
+    var operator;
 
     if (!currentlyArchived) {
-      var operator = {$set: {archived: true}};
+      operator = {$set: {archived: true}};
     } else {
-      var operator = {$set: {archived: false}};
+      operator = {$set: {archived: false}};
     }
 
     Projects.update(currentProjectId, operator);
@@ -156,11 +182,13 @@ Template.Dashboard.events({
     } else {
       showArchive();
     }
-  },
+  }
 
 });
 
 // ------------------------------------------------------------------------------------
+
+
 
 Template.Dashboard.helpers({
 
@@ -195,7 +223,7 @@ Template.Dashboard.helpers({
 
   tasks: function() {
     var currentProjectId = Session.get('currentProjectId');
-    return Tasks.find({projectId: currentProjectId}, {sort: {order: 1}});
+    return Tasks.find({projectId: currentProjectId}, {sort: {done: 1, order: 1}});
   },
 
   taskDone: function(_id) {
@@ -221,6 +249,12 @@ Template.Dashboard.helpers({
     var currentlyDone = Tasks.findOne(_id).done;
 
     return currentlyDone ? 'default' : 'success'
+  },
+
+  startDisabled: function(_id) {
+    var currentlyDone = Tasks.findOne(_id).done;
+
+    return currentlyDone ? 'disabled' : ''
   }
 
 });
