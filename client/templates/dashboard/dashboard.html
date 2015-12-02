@@ -14,7 +14,7 @@
 
         <ul class="nav nav-pills nav-stacked">
             {{#each projects}}
-                <li role="presentation" class="{{activeProject}}"><a href="#" class="project-nav" data-id="{{_id}}">{{name}}</a></li>
+                <li role="presentation" class="{{activeProject}}"><a href="#" class="project-nav" data-project_id="{{_id}}">{{name}}</a></li>
             {{/each}}
             <li role="presentation"><a href="#" id="show-archived">
                 <i class="fa fa-plus-circle show-icon"></i> {{showArchivedText}}</a>
@@ -23,11 +23,12 @@
         <div class="archived-projects">
             <ul class="nav nav-pills nav-stacked">
                 {{#each archivedProjects}}
-                    <li role="presentation" class="{{activeProject}}"><a href="#" class="project-nav" data-id="{{_id}}">{{name}}</a></li>
+                    <li role="presentation" class="{{activeProject}}"><a href="#" class="project-nav" data-project_id="{{_id}}">{{name}}</a></li>
                 {{/each}}
             </ul>
         </div>
 
+        <hr/>
 
     </div>
 

@@ -31,6 +31,8 @@ Dashboard.addTask = function(taskTextField) {
   }
 };
 
+// ------------------------------------------------------------------------------------
+
 Template.Dashboard.events({
 
   // -------- CREATE -------- //
@@ -39,10 +41,14 @@ Template.Dashboard.events({
     Dashboard.addProject(projectTextField);
   },
 
+  'click #add-task': function(e) {
+    var taskTextField = $('#add-task-text');
+    Dashboard.addTask(taskTextField);
+  },
+
   'keypress input': function(e) {
     // if enter is pressed on an input field
     if (e.which === 13) {
-
       var fieldId = $(e.target).attr('id');
 
       // add project
@@ -56,11 +62,6 @@ Template.Dashboard.events({
         Dashboard.addTask(taskTextField)
       }
     }
-  },
-
-  'click #add-task': function(e) {
-    var taskTextField = $('#add-task-text');
-    Dashboard.addTask(taskTextField);
   },
 
 
@@ -154,7 +155,7 @@ Template.Dashboard.events({
   'click .project-nav': function(e) {
     e.preventDefault();
 
-    var currentProjectId = $(e.target).data('id');
+    var currentProjectId = $(e.target).data('project_id');
 
     Session.set('currentProjectId', currentProjectId);
   },
@@ -188,12 +189,18 @@ Template.Dashboard.events({
 
 // ------------------------------------------------------------------------------------
 
-
-
 Template.Dashboard.helpers({
 
   projects: function() {
-    return Projects.find({archived: false}, {sort: {updatedAt: -1}});
+    var query = {userId: Meteor.userId(), archived: false};
+    var projection = {sort: {updatedAt: -1}};
+    return Projects.find(query, projection);
+  },
+
+  archivedProjects: function() {
+    var query = {userId: Meteor.userId(), archived: true};
+    var projection = {sort: {updatedAt: -1}};
+    return Projects.find(query, projection);
   },
 
   // get current project data from clicking side nav, which set session. Default to newest on initial load.
@@ -205,16 +212,11 @@ Template.Dashboard.helpers({
     } else {
       return null;
     }
-
   },
 
   activeProject: function() {
     var currentProjectId = Session.get('currentProjectId');
     return currentProjectId === this._id ? 'active' : '';
-  },
-
-  archivedProjects: function() {
-    return Projects.find({archived: true}, {sort: {updatedAt: -1}});
   },
 
   showArchivedText: function() {
@@ -228,7 +230,6 @@ Template.Dashboard.helpers({
 
   taskDone: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
-
     return currentlyDone ? 'task-done' : '';
   },
 
@@ -241,26 +242,19 @@ Template.Dashboard.helpers({
 
   doneVerb: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
-
     return currentlyDone ? 'Not Done' : 'Done'
   },
 
   doneStyle: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
-
     return currentlyDone ? 'default' : 'success'
   },
 
   startDisabled: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
-
     return currentlyDone ? 'disabled' : ''
   }
 
 });
 
 // ------------------------------------------------------------------------------------
-
-Template.Dashboard.onRendered(function() {
-
-});
