@@ -16,6 +16,10 @@ html, body {
 #footer, #wrapper:after {
     height: 50px;
 }
+
+#content {
+    margin-bottom: 30px;
+}
 /* --- Sticky Footer ENDS --- */
 
 body {

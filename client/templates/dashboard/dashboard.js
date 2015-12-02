@@ -117,17 +117,9 @@ Template.Dashboard.events({
 
   'click .delete-task': function(e) {
     var currentTaskId = $(e.target).data('task_id');
-    var currentOrder = Tasks.findOne(currentTaskId).order;
 
     if (confirm('Are you Sure?')) {
-      Tasks.remove(currentTaskId, function() {
-
-        // callback after delete to move all order after the deleted up by 1
-        var query = {order: {$gt: currentOrder}};
-        var operator = {$inc: {order: -1}};
-        var condition = {multi: true};
-        Tasks.update(query, operator, condition);
-      });
+      Meteor.call('taskDelete', currentTaskId);
     }
   },
 
