@@ -33,38 +33,45 @@
 
     <div class="col-md-9">
 
-        <section class="row project-header">
-            <div class="col-md-9">
-                <input type="text" id="project-name" value="{{currentProject.name}}"/>
-                <h4>Total Time: 13 hours 42 minutes</h4>
-            </div>
-            <div class="col-md-3 text-right">
-                <button type="button" class="btn btn-primary" id="archive-project">Archive Project</button>
-                <button type="button" class="btn btn-danger" id="delete-project">Delete Project</button>
-            </div>
-        </section>
 
-        <br/><br/>
+        {{#if currentProject}}
+            <section class="row project-header">
+                <div class="col-md-9">
+                    <input type="text" id="project-name" value="{{currentProject.name}}"/>
+                    <h4>Total Time: 13 hours 42 minutes</h4>
+                </div>
+                <div class="col-md-3 text-right">
+                    <button type="button" class="btn btn-primary" id="archive-project">{{archiveVerb}} Project</button>
+                    <button type="button" class="btn btn-danger" id="delete-project">Delete Project</button>
+                </div>
 
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Add a Task Here..." id="add-task-text">
-            <div class="input-group-btn">
-                <button type="button" class="btn btn-primary" id="add-task">Add Task</button>
+            </section>
+
+            <br/><br/>
+
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Add a Task Here..." id="add-task-text">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-primary" id="add-task">Add Task</button>
+                </div>
             </div>
-        </div>
+        {{else}}
+            <h3 class="text-center">Please Select or Add Project on the Menu on the left.</h3>
+        {{/if}}
+
 
         <hr/>
 
         <ul class="list-group">
             {{#each tasks}}
-                <li class="list-group-item task-list">
+                <li class="list-group-item task-list {{taskDone _id}}">
                     <section class="row">
                         <div class="col-md-1">
                             <button type="button" class="btn btn-primary">Start</button>
                         </div>
                         <div class="col-md-7">
-                            <input type="text" class="task-name" data-task="{{_id}}" value="{{name}}"/>
-                            <p>
+                            <input type="text" class="task-name" data-task_id="{{_id}}" value="{{name}}"/>
+                            <p class="task-time">
                                 Time: 3 hours 21 minutes
                                 <button type="button" class="btn btn-primary btn-xs note">
                                     <i class="fa fa-sticky-note-o"></i> Notes
@@ -72,10 +79,10 @@
                             </p>
                         </div>
                         <div class="col-md-4 text-right">
-                            <button type="button" class="btn btn-success done-task" data-task="{{_id}}">Done</button>
-                            <button type="button" class="btn btn-danger delete-task" data-task="{{_id}}">Delete</button>
-                            <i class="fa fa-arrow-circle-up task-up" data-task="{{_id}}"></i>
-                            <i class="fa fa-arrow-circle-down task-down" data-task="{{_id}}"></i>
+                            <button type="button" class="btn btn-{{doneStyle _id}} done-task" data-task_id="{{_id}}">{{doneVerb _id}}</button>
+                            <button type="button" class="btn btn-danger delete-task" data-task_id="{{_id}}">Delete</button>
+                            <i class="fa fa-arrow-circle-up task-up" data-task_id="{{_id}}"></i>
+                            <i class="fa fa-arrow-circle-down task-down" data-task_id="{{_id}}"></i>
                         </div>
                     </section>
                 </li>

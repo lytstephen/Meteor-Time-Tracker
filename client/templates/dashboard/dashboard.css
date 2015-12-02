@@ -33,3 +33,8 @@
 .archived-projects {
     display: none;
 }
+
+.task-done input, .task-done p {
+    text-decoration: line-through;
+    color: #aaa;
+}

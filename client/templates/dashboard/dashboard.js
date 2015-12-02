@@ -25,7 +25,8 @@ Template.Dashboard.events({
       var doc = {
         projectId: projectId,
         name: taskName,
-        order: numTasks + 1
+        order: numTasks + 1,
+        done: false
       };
 
       Tasks.insert(doc);
@@ -37,7 +38,101 @@ Template.Dashboard.events({
   },
 
 
-  // -------- NAVIGATION -------- //
+  // -------- UPDATE -------- //
+  'change #project-name': function(e) {
+    var newName = $(e.target).val();
+    var currentProjectId = Session.get('currentProjectId');
+    var operator = {$set: {name: newName}};
+
+    Projects.update(currentProjectId, operator);
+  },
+
+  'change .task-name': function(e) {
+    var newName = $(e.target).val();
+    var currentTaskId = $(e.target).data('task_id');
+    var operator = {$set: {name: newName}};
+
+    Tasks.update(currentTaskId, operator);
+  },
+
+  'click #archive-project': function(e) {
+    var currentProjectId = Session.get('currentProjectId');
+    var currentlyArchived = Projects.findOne(currentProjectId).archived;
+    var button = $('#archive-project');
+
+    if (!currentlyArchived) {
+      var operator = {$set: {archived: true}};
+    } else {
+      var operator = {$set: {archived: false}};
+    }
+
+    Projects.update(currentProjectId, operator);
+  },
+
+  'click .done-task': function(e) {
+    var currentProjectId = $(e.target).data('task_id');
+    var currentlyDone = Tasks.findOne(currentProjectId).done;
+
+    if (!currentlyDone) {
+      Tasks.update(currentProjectId, {$set: {done: true}});
+    } else {
+      Tasks.update(currentProjectId, {$set: {done: false}});
+    }
+  },
+
+  'click .task-up': function(e) {
+    var currentTaskId = $(e.target).data('task_id');
+    var currentOrder = Tasks.findOne(currentTaskId).order;
+
+    if (currentOrder > 1) {
+      var aboveTaskId = Tasks.findOne({order: currentOrder - 1})._id;
+      Tasks.update(currentTaskId, {$inc: {order: -1}});
+      Tasks.update(aboveTaskId, {$inc: {order: 1}});
+    }
+  },
+
+  'click .task-down': function(e) {
+    var currentTaskId = $(e.target).data('task_id');
+    var currentOrder = Tasks.findOne(currentTaskId).order;
+    var belowTask = Tasks.findOne({order: currentOrder + 1});
+
+    if (belowTask) {
+      Tasks.update(currentTaskId, {$inc: {order: 1}});
+      Tasks.update(belowTask._id, {$inc: {order: -1}});
+    }
+  },
+
+
+  // -------- DELETE -------- //
+
+  'click #delete-project': function(e) {
+    var currentProjectId = Session.get('currentProjectId');
+
+    if (confirm("Are you sure you want to delete this project?")) {
+      Projects.remove(currentProjectId, function() {
+        Session.set('currentProjectId', null);
+      });
+    }
+  },
+
+  'click .delete-task': function(e) {
+    var currentTaskId = $(e.target).data('task_id');
+    var currentOrder = Tasks.findOne(currentTaskId).order;
+
+    if (confirm('Are you Sure?')) {
+      Tasks.remove(currentTaskId, function() {
+
+        // callback after delete to move all order after the deleted up by 1
+        var query = {order: {$gt: currentOrder}};
+        var operator = {$inc: {order: -1}};
+        var condition = {multi: true};
+        Tasks.update(query, operator, condition);
+      });
+    }
+  },
+
+
+  // -------- FUNCTIONS -------- //
   'click .project-nav': function(e) {
     e.preventDefault();
 
@@ -71,81 +166,9 @@ Template.Dashboard.events({
     }
   },
 
-
-  // -------- UPDATE -------- //
-  'change #project-name': function(e) {
-    var newName = $(e.target).val();
-    var currentProjectId = Session.get('currentProjectId');
-    var operator = {$set: {name: newName}};
-
-    Projects.update(currentProjectId, operator);
-  },
-
-  'change .task-name': function(e) {
-    var newName = $(e.target).val();
-    var currentTaskId = $(e.target).data('task');
-    var operator = {$set: {name: newName}};
-
-    Tasks.update(currentTaskId, operator);
-  },
-
-  'click #archive-project': function(e) {
-    var currentProjectId = Session.get('currentProjectId');
-    var currentlyArchived = Projects.findOne(currentProjectId).archived;
-
-    var operator = {$set: {archived: true}};
-    //if (currentlyArchived) {
-    //  operator = {$set: {archived: 1}};
-    //}
-
-    Projects.update(currentProjectId, operator);
-  },
-
-  'click .task-up': function(e) {
-    var currentTaskId = $(e.target).data('task');
-    var currentOrder = Tasks.findOne(currentTaskId).order;
-
-    if (currentOrder > 1) {
-      var aboveTaskId = Tasks.findOne({order: currentOrder - 1})._id;
-      Tasks.update(currentTaskId, {$inc: {order: -1}});
-      Tasks.update(aboveTaskId, {$inc: {order: 1}});
-    }
-  },
-
-  'click .task-down': function(e) {
-    var currentTaskId = $(e.target).data('task');
-    var currentOrder = Tasks.findOne(currentTaskId).order;
-    var belowTask = Tasks.findOne({order: currentOrder + 1});
-
-    if (belowTask) {
-      Tasks.update(currentTaskId, {$inc: {order: 1}});
-      Tasks.update(belowTask._id, {$inc: {order: -1}});
-    }
-  },
-
-
-  // -------- DELETE -------- //
-
-  'click #delete-project': function(e) {
-    var currentProjectId = Session.get('currentProjectId');
-
-    if (confirm("Are you sure you want to delete this project?")) {
-      Projects.remove(currentProjectId, function() {
-        currentProjectId = Projects.findOne({archived: false}, {sort: {updatedAt: -1}});
-        Session.set('currentProjectId', currentProjectId);
-      });
-    }
-  },
-
-  'click .delete-task': function(e) {
-    var currentTaskId = $(e.target).data('task');
-
-    if (confirm('Are you Sure?')) {
-      Tasks.remove(currentTaskId);
-    }
-  }
-
 });
+
+// ------------------------------------------------------------------------------------
 
 Template.Dashboard.helpers({
 
@@ -160,8 +183,7 @@ Template.Dashboard.helpers({
     if (currentProjectId) {
       return Projects.findOne(currentProjectId);
     } else {
-      currentProjectId = Projects.findOne({archived: false}, {sort: {updatedAt: -1}});
-      Session.set('currentProjectId', currentProjectId)
+      return null;
     }
 
   },
@@ -182,6 +204,37 @@ Template.Dashboard.helpers({
   tasks: function() {
     var currentProjectId = Session.get('currentProjectId');
     return Tasks.find({projectId: currentProjectId}, {sort: {order: 1}});
+  },
+
+  taskDone: function(_id) {
+    var currentlyDone = Tasks.findOne(_id).done;
+
+    return currentlyDone ? 'task-done' : '';
+  },
+
+  archiveVerb: function() {
+    var currentProjectId = Session.get('currentProjectId');
+    var currentlyArchived = Projects.findOne(currentProjectId).archived;
+
+    return currentlyArchived ? 'Unarchive' : 'Archive'
+  },
+
+  doneVerb: function(_id) {
+    var currentlyDone = Tasks.findOne(_id).done;
+
+    return currentlyDone ? 'Not Done' : 'Done'
+  },
+
+  doneStyle: function(_id) {
+    var currentlyDone = Tasks.findOne(_id).done;
+
+    return currentlyDone ? 'default' : 'success'
   }
+
+});
+
+// ------------------------------------------------------------------------------------
+
+Template.Dashboard.onRendered(function() {
 
 });
