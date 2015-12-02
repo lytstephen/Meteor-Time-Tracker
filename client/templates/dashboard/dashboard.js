@@ -135,6 +135,14 @@ Template.Dashboard.events({
         Session.set('currentProjectId', currentProjectId);
       });
     }
+  },
+
+  'click .delete-task': function(e) {
+    var currentTaskId = $(e.target).data('task');
+
+    if (confirm('Are you Sure?')) {
+      Tasks.remove(currentTaskId);
+    }
   }
 
 });
