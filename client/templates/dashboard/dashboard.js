@@ -1,5 +1,6 @@
 Template.Dashboard.events({
 
+  // -------- CREATE -------- //
   'click #add-project': function(e) {
     var projectTextField = $('#add-project-text');
     var projectName = projectTextField.val();
@@ -35,6 +36,8 @@ Template.Dashboard.events({
     }
   },
 
+
+  // -------- NAVIGATION -------- //
   'click .project-nav': function(e) {
     e.preventDefault();
 
@@ -68,6 +71,8 @@ Template.Dashboard.events({
     }
   },
 
+
+  // -------- UPDATE -------- //
   'change #project-name': function(e) {
     var newName = $(e.target).val();
     var currentProjectId = Session.get('currentProjectId');
@@ -95,6 +100,31 @@ Template.Dashboard.events({
 
     Projects.update(currentProjectId, operator);
   },
+
+  'click .task-up': function(e) {
+    var currentTaskId = $(e.target).data('task');
+    var currentOrder = Tasks.findOne(currentTaskId).order;
+
+    if (currentOrder > 1) {
+      var aboveTaskId = Tasks.findOne({order: currentOrder - 1})._id;
+      Tasks.update(currentTaskId, {$inc: {order: -1}});
+      Tasks.update(aboveTaskId, {$inc: {order: 1}});
+    }
+  },
+
+  'click .task-down': function(e) {
+    var currentTaskId = $(e.target).data('task');
+    var currentOrder = Tasks.findOne(currentTaskId).order;
+    var belowTask = Tasks.findOne({order: currentOrder + 1});
+
+    if (belowTask) {
+      Tasks.update(currentTaskId, {$inc: {order: 1}});
+      Tasks.update(belowTask._id, {$inc: {order: -1}});
+    }
+  },
+
+
+  // -------- DELETE -------- //
 
   'click #delete-project': function(e) {
     var currentProjectId = Session.get('currentProjectId');
