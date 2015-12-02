@@ -16,12 +16,17 @@
     margin-bottom: 15px;
 }
 
-#project-name {
+#project-name, .task-name {
     border: none;
     font-size: 30px;
     cursor: pointer;
     width: 100%;
 }
+.task-name {
+    font-size: 20px !important;
+    margin-bottom: 10px;
+}
+
 #project-name:focus {
     cursor: default;
 }

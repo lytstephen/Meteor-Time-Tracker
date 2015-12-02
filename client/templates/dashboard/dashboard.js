@@ -1,8 +1,8 @@
 Template.Dashboard.events({
 
   'click #add-project': function(e) {
-    var projectName = $('#add-project-text').val();
-    var numProjects = Projects.find().count();
+    var projectTextField = $('#add-project-text');
+    var projectName = projectTextField.val();
 
     var doc = {
       userId: Meteor.userId(),
@@ -11,6 +11,28 @@ Template.Dashboard.events({
     };
 
     Projects.insert(doc);
+    projectTextField.val('');
+  },
+
+  'click #add-task': function(e) {
+    var taskTextField = $('#add-task-text');
+    var taskName = taskTextField.val();
+    var numTasks = Tasks.find().count();
+    var projectId = Session.get('currentProjectId');
+
+    if (projectId) {
+      var doc = {
+        projectId: projectId,
+        name: taskName,
+        order: numTasks + 1
+      };
+
+      Tasks.insert(doc);
+      taskTextField.val('');
+
+    } else {
+      alert('Please select a project first');
+    }
   },
 
   'click .project-nav': function(e) {
@@ -21,7 +43,7 @@ Template.Dashboard.events({
     Session.set('currentProjectId', currentProjectId);
   },
 
-  'click .show-archived': function(e) {
+  'click #show-archived': function(e) {
     var currentlyShowing = Session.get('showingArchived');
     var showIcon = $('.show-icon');
     var archivedProjects = $('.archived-projects');
@@ -52,6 +74,14 @@ Template.Dashboard.events({
     var operator = {$set: {name: newName}};
 
     Projects.update(currentProjectId, operator);
+  },
+
+  'change .task-name': function(e) {
+    var newName = $(e.target).val();
+    var currentTaskId = $(e.target).data('task');
+    var operator = {$set: {name: newName}};
+
+    Tasks.update(currentTaskId, operator);
   },
 
   'click #archive-project': function(e) {
@@ -109,6 +139,11 @@ Template.Dashboard.helpers({
 
   showArchivedText: function() {
     return Session.get('showingArchived') ? 'Hide Archived Projects' : 'Show Archived Projects'
+  },
+
+  tasks: function() {
+    var currentProjectId = Session.get('currentProjectId');
+    return Tasks.find({projectId: currentProjectId}, {sort: {order: 1}});
   }
 
 });
