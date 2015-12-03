@@ -84,7 +84,7 @@
                             <input type="text" class="task-name" data-task_id="{{_id}}" value="{{name}}"/>
                             <p class="task-time">
                                 Time: {{taskTotalTimeText _id}}
-                                <button type="button" class="btn btn-primary btn-xs note">
+                                <button type="button" class="btn btn-primary btn-xs note" data-toggle="modal" data-target="#myModal-{{_id}}">
                                     <i class="fa fa-sticky-note-o"></i> Notes
                                 </button>
                             </p>
@@ -101,6 +101,22 @@
                         </div>
                     </section>
                 </li>
+                <div class="modal fade" id="myModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Notes for {{name}}</h4>
+                            </div>
+                            <div class="modal-body">
+                                <textarea class="form-control task-note-text" rows="6" data-task_id="{{_id}}">{{notes}}</textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {{/each}}
         </ul>
 

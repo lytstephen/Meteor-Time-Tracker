@@ -192,6 +192,14 @@ Template.Dashboard.events({
     }
   },
 
+  'change .task-note-text': function(e) {
+    var textArea = $(e.target);
+    var text = textArea.val();
+    var currentTaskId = textArea.data('task_id');
+
+    Tasks.update(currentTaskId, {$set: {notes: text}});
+  },
+
 
   // -------- DELETE -------- //
 
