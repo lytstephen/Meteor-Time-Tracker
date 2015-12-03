@@ -15,14 +15,14 @@ Dashboard.addProject = function(projectTextField) {
 
 Dashboard.addTask = function(taskTextField) {
   var taskName = taskTextField.val();
-  var numTasks = Tasks.find().count();
   var projectId = Session.get('currentProjectId');
+  var numTasksInProject = Tasks.find({projectId: projectId}).count();
 
   if (projectId) {
     var doc = {
       projectId: projectId,
       name: taskName,
-      order: numTasks + 1,
+      order: numTasksInProject + 1,
       done: false
     };
 
@@ -144,9 +144,10 @@ Template.Dashboard.events({
 
   'click .delete-task': function(e) {
     var currentTaskId = $(e.target).data('task_id');
+    var currentProjectId = Session.get('currentProjectId');
 
     if (confirm('Are you Sure?')) {
-      Meteor.call('taskDelete', currentTaskId);
+      Meteor.call('taskDelete', currentTaskId, currentProjectId);
     }
   },
 
@@ -220,7 +221,7 @@ Template.Dashboard.helpers({
   },
 
   showArchivedText: function() {
-    return Session.get('showingArchived') ? 'Hide Archived Projects' : 'Show Archived Projects'
+    return Session.get('showingArchived') ? 'Hide Archived Projects' : 'Show Archived Projects';
   },
 
   tasks: function() {
@@ -237,22 +238,22 @@ Template.Dashboard.helpers({
     var currentProjectId = Session.get('currentProjectId');
     var currentlyArchived = Projects.findOne(currentProjectId).archived;
 
-    return currentlyArchived ? 'Unarchive' : 'Archive'
+    return currentlyArchived ? 'Unarchive' : 'Archive';
   },
 
   doneVerb: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
-    return currentlyDone ? 'Not Done' : 'Done'
+    return currentlyDone ? 'Not Done' : 'Done';
   },
 
   doneStyle: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
-    return currentlyDone ? 'default' : 'success'
+    return currentlyDone ? 'default' : 'success';
   },
 
   startDisabled: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
-    return currentlyDone ? 'disabled' : ''
+    return currentlyDone ? 'disabled' : '';
   }
 
 });
