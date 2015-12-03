@@ -31,6 +31,24 @@ Dashboard.addTask = function(taskTextField) {
   }
 };
 
+Dashboard.findTaskCurrentInterval = function(taskId) {
+  var query = { taskId: taskId, end: {$exists: false} };
+  return Intervals.findOne(query);
+};
+
+Dashboard.msToTime = function(duration) {
+  var milliseconds = parseInt((duration%1000)/100)
+      , seconds = parseInt((duration/1000)%60)
+      , minutes = parseInt((duration/(1000*60))%60)
+      , hours = parseInt((duration/(1000*60*60))%24);
+
+  hours = (hours < 10) ? "0" + hours : hours;
+  minutes = (minutes < 10) ? "0" + minutes : minutes;
+  seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+  return hours + ":" + minutes + ":" + seconds;
+};
+
 // ------------------------------------------------------------------------------------
 
 Template.Dashboard.events({
@@ -60,6 +78,33 @@ Template.Dashboard.events({
       } else if (fieldId === 'add-task-text') {
         var taskTextField = $('#add-task-text');
         Dashboard.addTask(taskTextField)
+      }
+    }
+  },
+
+  'click .start-button': function(e) {
+    var currentTaskId = $(e.target).data('task_id');
+    var currentInterval = Dashboard.findTaskCurrentInterval(currentTaskId);
+
+    // check if it's tracking anything at all
+    var currentlyTracking = Intervals.findOne({end: {$exists: false}});
+    if (currentlyTracking && currentlyTracking.taskId !== currentTaskId) {
+      alert('You can only track one task at a time. Please end the current task before starting another.')
+
+    } else {
+      // if there is no current interval, it's a start on the time
+      if (!currentInterval) {
+        var doc = {
+          taskId: currentTaskId,
+          start: new Date
+        };
+
+        Intervals.insert(doc);
+      } else {
+
+        // if there's already a current interval, it's a end on that interval
+        var operator = {$set: {end: new Date}};
+        Intervals.update(currentInterval._id, operator)
       }
     }
   },
@@ -256,6 +301,26 @@ Template.Dashboard.helpers({
   startDisabled: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
     return currentlyDone ? 'disabled' : '';
+  },
+
+  currentlyTrackingOnTask: function(taskId) {
+    return Dashboard.findTaskCurrentInterval(taskId)
+  },
+
+  taskTotalTime: function(taskId) {
+    var query = {taskId: taskId};
+    var cursor = Intervals.find(query);
+    var totalTime = 0;
+
+    cursor.forEach(function(interval) {
+      if (interval.end) {
+        totalTime += interval.end.getTime() - interval.start.getTime();
+      } else {
+        totalTime += TimeSync.serverTime() - interval.start.getTime();
+      }
+    });
+
+    return Dashboard.msToTime(totalTime);
   }
 
 });

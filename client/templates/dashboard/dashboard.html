@@ -14,7 +14,9 @@
 
         <ul class="nav nav-pills nav-stacked">
             {{#each projects}}
-                <li role="presentation" class="{{activeProject}}"><a href="#" class="project-nav" data-project_id="{{_id}}">{{name}}</a></li>
+                <li role="presentation" class="{{activeProject}}">
+                    <a href="#" class="project-nav" data-project_id="{{_id}}">{{name}}</a>
+                </li>
             {{/each}}
             <li role="presentation"><a href="#" id="show-archived">
                 <i class="fa fa-plus-circle show-icon"></i> {{showArchivedText}}</a>
@@ -23,7 +25,9 @@
         <div class="archived-projects">
             <ul class="nav nav-pills nav-stacked">
                 {{#each archivedProjects}}
-                    <li role="presentation" class="{{activeProject}}"><a href="#" class="project-nav" data-project_id="{{_id}}">{{name}}</a></li>
+                    <li role="presentation" class="{{activeProject}}">
+                        <a href="#" class="project-nav" data-project_id="{{_id}}">{{name}}</a>
+                    </li>
                 {{/each}}
             </ul>
         </div>
@@ -68,20 +72,30 @@
                 <li class="list-group-item task-list {{taskDone _id}}">
                     <section class="row">
                         <div class="col-md-1">
-                            <button type="button" class="btn btn-primary" {{startDisabled _id}}>Start</button>
+                            {{#if currentlyTrackingOnTask _id}}
+                                <button type="button" class="btn btn-warning start-button"
+                                    {{startDisabled _id}} data-task_id="{{_id}}">End</button>
+                            {{else}}
+                                <button type="button" class="btn btn-primary start-button"
+                                    {{startDisabled _id}} data-task_id="{{_id}}">Start</button>
+                            {{/if}}
                         </div>
                         <div class="col-md-7">
                             <input type="text" class="task-name" data-task_id="{{_id}}" value="{{name}}"/>
                             <p class="task-time">
-                                Time: 3 hours 21 minutes
+                                Time: {{taskTotalTime _id}}
                                 <button type="button" class="btn btn-primary btn-xs note">
                                     <i class="fa fa-sticky-note-o"></i> Notes
                                 </button>
                             </p>
                         </div>
                         <div class="col-md-4 text-right">
-                            <button type="button" class="btn btn-{{doneStyle _id}} done-task" data-task_id="{{_id}}">{{doneVerb _id}}</button>
-                            <button type="button" class="btn btn-danger delete-task" data-task_id="{{_id}}">Delete</button>
+                            <button type="button" class="btn btn-{{doneStyle _id}} done-task" data-task_id="{{_id}}">
+                                {{doneVerb _id}}
+                            </button>
+                            <button type="button" class="btn btn-danger delete-task" data-task_id="{{_id}}">
+                                Delete
+                            </button>
                             <i class="fa fa-arrow-circle-up task-up" data-task_id="{{_id}}"></i>
                             <i class="fa fa-arrow-circle-down task-down" data-task_id="{{_id}}"></i>
                         </div>
