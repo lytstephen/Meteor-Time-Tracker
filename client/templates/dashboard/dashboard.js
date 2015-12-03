@@ -97,31 +97,33 @@ Template.Dashboard.events({
   },
 
   'click .done-task': function(e) {
-    var currentProjectId = $(e.target).data('task_id');
-    var currentlyDone = Tasks.findOne(currentProjectId).done;
+    var currentTaskId = $(e.target).data('task_id');
+    var currentlyDone = Tasks.findOne(currentTaskId).done;
 
     if (!currentlyDone) {
-      Tasks.update(currentProjectId, {$set: {done: true}});
+      Tasks.update(currentTaskId, {$set: {done: true}});
     } else {
-      Tasks.update(currentProjectId, {$set: {done: false}});
+      Tasks.update(currentTaskId, {$set: {done: false}});
     }
   },
 
   'click .task-up': function(e) {
+    var currentProjectId = Session.get('currentProjectId');
     var currentTaskId = $(e.target).data('task_id');
     var currentOrder = Tasks.findOne(currentTaskId).order;
 
     if (currentOrder > 1) {
-      var aboveTaskId = Tasks.findOne({order: currentOrder - 1})._id;
+      var aboveTaskId = Tasks.findOne({projectId: currentProjectId, order: currentOrder - 1})._id;
       Tasks.update(currentTaskId, {$inc: {order: -1}});
       Tasks.update(aboveTaskId, {$inc: {order: 1}});
     }
   },
 
   'click .task-down': function(e) {
+    var currentProjectId = Session.get('currentProjectId');
     var currentTaskId = $(e.target).data('task_id');
     var currentOrder = Tasks.findOne(currentTaskId).order;
-    var belowTask = Tasks.findOne({order: currentOrder + 1});
+    var belowTask = Tasks.findOne({projectId: currentProjectId, order: currentOrder - 1});
 
     if (belowTask) {
       Tasks.update(currentTaskId, {$inc: {order: 1}});
