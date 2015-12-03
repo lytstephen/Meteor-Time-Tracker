@@ -43,7 +43,7 @@
             <section class="row project-header">
                 <div class="col-md-9">
                     <input type="text" id="project-name" value="{{currentProject.name}}"/>
-                    <h4>Total Time: 13 hours 42 minutes</h4>
+                    <h4>Total Time: {{projectTotalTime}}</h4>
                 </div>
                 <div class="col-md-3 text-right">
                     <button type="button" class="btn btn-primary" id="archive-project">{{archiveVerb}} Project</button>
@@ -83,7 +83,7 @@
                         <div class="col-md-7">
                             <input type="text" class="task-name" data-task_id="{{_id}}" value="{{name}}"/>
                             <p class="task-time">
-                                Time: {{taskTotalTime _id}}
+                                Time: {{taskTotalTimeText _id}}
                                 <button type="button" class="btn btn-primary btn-xs note">
                                     <i class="fa fa-sticky-note-o"></i> Notes
                                 </button>

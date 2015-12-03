@@ -49,6 +49,22 @@ Dashboard.msToTime = function(duration) {
   return hours + ":" + minutes + ":" + seconds;
 };
 
+Dashboard.taskTotalTime = function(taskId) {
+  var query = {taskId: taskId};
+  var cursor = Intervals.find(query);
+  var totalTime = 0;
+
+  cursor.forEach(function(interval) {
+    if (interval.end) {
+      totalTime += interval.end.getTime() - interval.start.getTime();
+    } else {
+      totalTime += TimeSync.serverTime() - interval.start.getTime();
+    }
+  });
+
+  return totalTime;
+};
+
 // ------------------------------------------------------------------------------------
 
 Template.Dashboard.events({
@@ -307,17 +323,18 @@ Template.Dashboard.helpers({
     return Dashboard.findTaskCurrentInterval(taskId)
   },
 
-  taskTotalTime: function(taskId) {
-    var query = {taskId: taskId};
-    var cursor = Intervals.find(query);
+  taskTotalTimeText: function(taskId) {
+    var totalTime = Dashboard.taskTotalTime(taskId);
+    return Dashboard.msToTime(totalTime);
+  },
+
+  projectTotalTime: function() {
+    var currentProjectId = Session.get('currentProjectId');
+    var cursor = Tasks.find({projectId: currentProjectId});
     var totalTime = 0;
 
-    cursor.forEach(function(interval) {
-      if (interval.end) {
-        totalTime += interval.end.getTime() - interval.start.getTime();
-      } else {
-        totalTime += TimeSync.serverTime() - interval.start.getTime();
-      }
+    cursor.forEach(function(task) {
+      totalTime += Dashboard.taskTotalTime(task._id);
     });
 
     return Dashboard.msToTime(totalTime);
