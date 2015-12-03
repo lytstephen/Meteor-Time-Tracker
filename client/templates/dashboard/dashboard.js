@@ -184,7 +184,7 @@ Template.Dashboard.events({
     var currentProjectId = Session.get('currentProjectId');
     var currentTaskId = $(e.target).data('task_id');
     var currentOrder = Tasks.findOne(currentTaskId).order;
-    var belowTask = Tasks.findOne({projectId: currentProjectId, order: currentOrder - 1});
+    var belowTask = Tasks.findOne({projectId: currentProjectId, order: currentOrder + 1});
 
     if (belowTask) {
       Tasks.update(currentTaskId, {$inc: {order: 1}});
