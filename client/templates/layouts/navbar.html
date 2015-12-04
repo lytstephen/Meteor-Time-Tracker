@@ -14,6 +14,7 @@
             <div id="navbar" class="collapse navbar-collapse navbar-right">
                 <ul class="nav navbar-nav">
                     <li class="{{isActive '/'}}"><a href="/">Home</a></li>
+                    <li class="{{isActive '/summary'}}"><a href="{{pathFor 'Summary'}}">Summary</a></li>
                     {{#if currentUser}}
                         <li role="presentation" class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#"

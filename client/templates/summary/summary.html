@@ -1,17 +1,27 @@
-<template name="Dashboard">
+<template name="Summary">
 
-    <div class="col-md-3">
-        <h2>Projects</h2>
+    <section class="row">
 
-        <div class="input-group">
-            <input type="text" class="form-control" id="add-project-text">
-            <div class="input-group-btn">
-                <button type="button" class="btn btn-primary" id="add-project">Add</button>
-            </div>
+        <div class="col-md-3">
+            <select class="form-control">
+                <option>Today</option>
+                <option>This week</option>
+                <option>This Month</option>
+                <option>Last 7 days</option>
+                <option>Last 30 days</option>
+                <option>Specify Custom Date Range</option>
+            </select>
         </div>
 
-        <hr/>
+        <div class="col-md-9">
+            Select Time Widget Here.
+        </div>
 
+    </section>
+
+    <hr/>
+
+    <div class="col-md-3">
         <ul class="nav nav-pills nav-stacked">
             {{#each projects}}
                 <li role="presentation" class="{{activeProject}}">
@@ -31,9 +41,6 @@
                 {{/each}}
             </ul>
         </div>
-
-        <hr/>
-
     </div>
 
     <div class="col-md-9">
@@ -41,24 +48,12 @@
         {{#if currentProject}}
             <section class="row project-header">
                 <div class="col-md-9">
-                    <input type="text" id="project-name" value="{{currentProject.name}}"/>
+                    <span id="project-name">{{currentProject.name}}</span>
+                </div>
+                <div class="col-md-3">
                     <h4>Total Time: {{projectTotalTime}}</h4>
                 </div>
-                <div class="col-md-3 text-right">
-                    <button type="button" class="btn btn-primary" id="archive-project">{{archiveVerb}} Project</button>
-                    <button type="button" class="btn btn-danger" id="delete-project">Delete Project</button>
-                </div>
-
             </section>
-
-            <br/><br/>
-
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Add a Task Here..." id="add-task-text">
-                <div class="input-group-btn">
-                    <button type="button" class="btn btn-primary" id="add-task">Add Task</button>
-                </div>
-            </div>
         {{else}}
             <h3 class="text-center">Please Select or Add Project from the Menu on the left.</h3>
         {{/if}}
@@ -68,19 +63,10 @@
 
         <ul class="list-group">
             {{#each tasks}}
-                <li class="list-group-item task-list {{taskDone _id}}">
+                <li class="list-group-item task-list">
                     <section class="row">
-                        <div class="col-md-1">
-                            {{#if currentlyTrackingOnTask _id}}
-                                <button type="button" class="btn btn-warning start-button"
-                                    {{startDisabled _id}} data-task_id="{{_id}}">End</button>
-                            {{else}}
-                                <button type="button" class="btn btn-primary start-button"
-                                    {{startDisabled _id}} data-task_id="{{_id}}">Start</button>
-                            {{/if}}
-                        </div>
                         <div class="col-md-7">
-                            <input type="text" class="task-name" data-task_id="{{_id}}" value="{{name}}"/>
+                            <div class="task-name">{{name}}</div>
                             <p class="task-time">
                                 Time: {{taskTotalTimeText _id}}
                                 <button type="button" class="btn btn-primary btn-xs note" data-toggle="modal" data-target="#myModal-{{_id}}">
@@ -88,18 +74,40 @@
                                 </button>
                             </p>
                         </div>
-                        <div class="col-md-4 text-right">
-                            <button type="button" class="btn btn-{{doneStyle _id}} done-task" data-task_id="{{_id}}">
-                                {{doneVerb _id}}
+                        <div class="col-md-5 text-right">
+                            <button type="button" class="btn btn-primary delete-task" data-task_id="{{_id}}">
+                                Show Intervals
                             </button>
-                            <button type="button" class="btn btn-danger delete-task" data-task_id="{{_id}}">
-                                Delete
-                            </button>
-                            <i class="fa fa-arrow-circle-up task-up" data-task_id="{{_id}}"></i>
-                            <i class="fa fa-arrow-circle-down task-down" data-task_id="{{_id}}"></i>
                         </div>
                     </section>
                 </li>
+                {{#each taskIntervals _id}}
+                    <li class="list-group-item">
+                        <section class="row">
+                            <div class="col-md-1">
+                                <h5>Start:</h5>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group datetimepicker">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    <input class="interval-start form-control" type="text" value="{{humanDateTime start}}"/>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <h5>End:</h5>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group datetimepicker">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    <input class="interval-end form-control" type="text" value="{{humanDateTime end}}"/>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-right">
+                                <button type="button" class="btn btn-danger">Delete</button>
+                            </div>
+                        </section>
+                    </li>
+                {{/each}}
                 <div class="modal fade" id="myModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">

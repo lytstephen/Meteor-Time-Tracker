@@ -36,35 +36,6 @@ Dashboard.findTaskCurrentInterval = function(taskId) {
   return Intervals.findOne(query);
 };
 
-Dashboard.msToTime = function(duration) {
-  var milliseconds = parseInt((duration%1000)/100)
-      , seconds = parseInt((duration/1000)%60)
-      , minutes = parseInt((duration/(1000*60))%60)
-      , hours = parseInt((duration/(1000*60*60))%24);
-
-  hours = (hours < 10) ? "0" + hours : hours;
-  minutes = (minutes < 10) ? "0" + minutes : minutes;
-  seconds = (seconds < 10) ? "0" + seconds : seconds;
-
-  return hours + ":" + minutes + ":" + seconds;
-};
-
-Dashboard.taskTotalTime = function(taskId) {
-  var query = {taskId: taskId};
-  var cursor = Intervals.find(query);
-  var totalTime = 0;
-
-  cursor.forEach(function(interval) {
-    if (interval.end) {
-      totalTime += interval.end.getTime() - interval.start.getTime();
-    } else {
-      totalTime += TimeSync.serverTime() - interval.start.getTime();
-    }
-  });
-
-  return totalTime;
-};
-
 // ------------------------------------------------------------------------------------
 
 Template.Dashboard.events({
@@ -263,53 +234,9 @@ Template.Dashboard.events({
 
 Template.Dashboard.helpers({
 
-  projects: function() {
-    var query = {userId: Meteor.userId(), archived: false};
-    var projection = {sort: {updatedAt: -1}};
-    return Projects.find(query, projection);
-  },
-
-  archivedProjects: function() {
-    var query = {userId: Meteor.userId(), archived: true};
-    var projection = {sort: {updatedAt: -1}};
-    return Projects.find(query, projection);
-  },
-
-  // get current project data from clicking side nav, which set session. Default to newest on initial load.
-  currentProject: function() {
-    var currentProjectId = Session.get('currentProjectId');
-
-    if (currentProjectId) {
-      return Projects.findOne(currentProjectId);
-    } else {
-      return null;
-    }
-  },
-
-  activeProject: function() {
-    var currentProjectId = Session.get('currentProjectId');
-    return currentProjectId === this._id ? 'active' : '';
-  },
-
-  showArchivedText: function() {
-    return Session.get('showingArchived') ? 'Hide Archived Projects' : 'Show Archived Projects';
-  },
-
-  tasks: function() {
-    var currentProjectId = Session.get('currentProjectId');
-    return Tasks.find({projectId: currentProjectId}, {sort: {done: 1, order: 1}});
-  },
-
   taskDone: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
     return currentlyDone ? 'task-done' : '';
-  },
-
-  archiveVerb: function() {
-    var currentProjectId = Session.get('currentProjectId');
-    var currentlyArchived = Projects.findOne(currentProjectId).archived;
-
-    return currentlyArchived ? 'Unarchive' : 'Archive';
   },
 
   doneVerb: function(_id) {
@@ -325,27 +252,6 @@ Template.Dashboard.helpers({
   startDisabled: function(_id) {
     var currentlyDone = Tasks.findOne(_id).done;
     return currentlyDone ? 'disabled' : '';
-  },
-
-  currentlyTrackingOnTask: function(taskId) {
-    return Dashboard.findTaskCurrentInterval(taskId)
-  },
-
-  taskTotalTimeText: function(taskId) {
-    var totalTime = Dashboard.taskTotalTime(taskId);
-    return Dashboard.msToTime(totalTime);
-  },
-
-  projectTotalTime: function() {
-    var currentProjectId = Session.get('currentProjectId');
-    var cursor = Tasks.find({projectId: currentProjectId});
-    var totalTime = 0;
-
-    cursor.forEach(function(task) {
-      totalTime += Dashboard.taskTotalTime(task._id);
-    });
-
-    return Dashboard.msToTime(totalTime);
   }
 
 });
