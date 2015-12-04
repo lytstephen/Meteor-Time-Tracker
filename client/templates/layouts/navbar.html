@@ -13,9 +13,9 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse navbar-right">
                 <ul class="nav navbar-nav">
-                    <li class="{{isActive '/'}}"><a href="/">Home</a></li>
-                    <li class="{{isActive '/summary'}}"><a href="{{pathFor 'Summary'}}">Summary</a></li>
                     {{#if currentUser}}
+                        <li class="{{isActive '/'}}"><a href="/">Home</a></li>
+                        <li class="{{isActive '/summary'}}"><a href="{{pathFor 'Summary'}}">Summary</a></li>
                         <li role="presentation" class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#"
                                role="button" aria-haspopup="true" aria-expanded="false">
@@ -28,7 +28,7 @@
                             </ul>
                         </li>
                     {{else}}
-                        <li class="{{isActive '/sign-in'}}"><a href="/sign-in">Login / Signup</a></li>
+                        <li class="{{isActive '/sign-in'}}"><a href="/sign-in">Login</a></li>
                     {{/if}}
                 </ul>
             </div><!--/.nav-collapse -->
