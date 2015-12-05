@@ -174,7 +174,7 @@ Template.Summary.helpers({
   overallTotalTime: function() {
     var totalTime = 0;
 
-    var projectsCursor = Projects.find({userId: Meteor.userId()});
+    var projectsCursor = Projects.find({userId: Meteor.userId(), archived: false});
 
     projectsCursor.forEach(function(project) {
       var tasksCursor = Tasks.find({projectId: project._id});
