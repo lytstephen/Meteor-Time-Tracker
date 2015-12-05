@@ -1,5 +1,38 @@
 Template.Summary.events({
 
+  // -------- UPDATES ---------- //
+  'change .interval-start': function(e) {
+    var field = $(e.target);
+    var currentIntervalId = field.data('interval_id');
+
+    var apm = field.val().substring(15,17);
+    var date = field.val().substring(0,2);
+    var month = field.val().substring(3,5) - 1;
+    var year = '20' + field.val().substring(6,8);
+    var hour = field.val().substring(9,11);
+    var minute = field.val().substring(12,14);
+
+    if (apm === "PM" && hour != '12') {
+      hour = Number(hour) + 12;
+    }
+
+    var newDate = new Date(year, month, date, hour, minute, 0, 0);
+    console.log(newDate);
+
+    var operator = {$set: {start: newDate}};
+    var endTime = Intervals.findOne(currentIntervalId).end;
+
+    if (newDate == 'Invalid Date') {
+      alert('Time not correctly formatted. Please enter time with this format:' +
+          ' 18/02/2015 09:31 PM');
+    } else if (newDate > endTime) {
+      alert('start time cannot be greater than endtime');
+    } else {
+      Intervals.update(currentIntervalId, operator);
+    }
+  },
+
+
   // -------- FUNCTIONS -------- //
   'click .project-nav': function(e) {
     e.preventDefault();
@@ -32,22 +65,109 @@ Template.Summary.events({
     } else {
       showArchive();
     }
-  }
+  },
 
+  'click #overall': function(e) {
+    e.preventDefault();
+
+    Session.set('currentProjectId', null);
+    $(e.target).addClass('active');
+  },
+
+  'click .goToProject': function(e) {
+    e.preventDefault();
+    var projectId = $(e.target).data('project_id');
+    Session.set('currentProjectId', projectId)
+  },
+
+  'change #date-range-filter': function(e) {
+    var range = $(e.target).val();
+    var setSessionRange = function(from, to, range) {
+      Session.set('from', from);
+      Session.set('to', to);
+      Session.set('range', range)
+    };
+
+    switch (range) {
+      case 'all':
+        setSessionRange(null, null, 'all');
+        break;
+      case 'today':
+        setSessionRange(new Date().setHours(0), null, 'today');
+        break;
+      case 'this-month':
+        setSessionRange(new Date().setDate(1), null, 'this-month');
+        break;
+      case 'last-7':
+        setSessionRange(new Date().setDate(new Date().getDate() - 7), null, 'last-7');
+        break;
+      case 'last-30':
+        setSessionRange(new Date().setDate(new Date().getDate() - 30), null, 'last-30');
+        break;
+      case 'specify':
+
+        break;
+    }
+
+    console.log('from:' + Session.get('from'));
+  }
 });
 
 
 Template.Summary.helpers({
 
   taskIntervals: function(taskId) {
-    var query = {taskId: taskId};
+    var from = Session.get('from');
+    var to = Session.get('to');
+    var query = {taskId: taskId, end: {$exists: true}};
+
+    if (from && !to) {
+      query = _.extend(query, {
+        end: {$gt: new Date(from)}
+      });
+    } else if (to && from) {
+      query = _.extend(query, {
+        end: {$in: [new Date(from), new Date(to)]}
+      });
+    }
     var projection = {sort: {start: -1}};
 
     return Intervals.find(query, projection);
   },
 
+  intervalDuration: function() {
+    return Helper.msToTime(this.end - this.start);
+  },
+
   humanDateTime: function(time) {
-    return moment(time).format('DD/MM/YY hh:mm:ss A')
+    return moment(time).format('DD/MM/YY hh:mm A')
+  },
+
+  overallActive: function() {
+    var currentProjectId = Session.get('currentProjectId');
+
+    return currentProjectId ? '' : 'active'
+  },
+
+  overallTotalTime: function() {
+    var totalTime = 0;
+
+    var projectsCursor = Projects.find({userId: Meteor.userId()});
+
+    projectsCursor.forEach(function(project) {
+      var tasksCursor = Tasks.find({projectId: project._id});
+
+      tasksCursor.forEach(function(task) {
+        totalTime += Helper.taskTotalTime(task._id)
+      });
+
+    });
+
+    return Helper.msToTime(totalTime);
+  },
+
+  rangeSelected: function(range) {
+    return range === Session.get('range') ? 'selected' : ''
   }
 
 });

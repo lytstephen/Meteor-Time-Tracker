@@ -3,13 +3,13 @@
     <section class="row">
 
         <div class="col-md-3">
-            <select class="form-control">
-                <option>Today</option>
-                <option>This week</option>
-                <option>This Month</option>
-                <option>Last 7 days</option>
-                <option>Last 30 days</option>
-                <option>Specify Custom Date Range</option>
+            <select class="form-control" id="date-range-filter">
+                <option value="all" {{rangeSelected 'all'}}>All Time</option>
+                <option value="today" {{rangeSelected 'today'}}>Today</option>
+                <option value="this-month" {{rangeSelected 'this-month'}}>This Month</option>
+                <option value="last-7" {{rangeSelected 'last-7'}}>Last 7 days</option>
+                <option value="last-30" {{rangeSelected 'last-30'}}>Last 30 days</option>
+                <option value="specify" {{rangeSelected 'specify'}}>Specify Custom Date Range</option>
             </select>
         </div>
 
@@ -23,6 +23,7 @@
 
     <div class="col-md-3">
         <ul class="nav nav-pills nav-stacked">
+            <li role="presentation" class="{{overallActive}}"><a href="#" id="overall">Overall Summaries</a></li>
             {{#each projects}}
                 <li role="presentation" class="{{activeProject}}">
                     <a href="#" class="project-nav" data-project_id="{{_id}}">{{name}}</a>
@@ -46,86 +47,120 @@
     <div class="col-md-9">
 
         {{#if currentProject}}
+
+            <!-- ///////////////////////// Project Selected ////////////////////////// -->
             <section class="row project-header">
-                <div class="col-md-9">
+                <div class="col-md-8">
                     <span id="project-name">{{currentProject.name}}</span>
                 </div>
-                <div class="col-md-3">
-                    <h4>Total Time: {{projectTotalTime}}</h4>
+                <div class="col-md-4">
+                    <h4 class="text-right">Total Time: {{projectTotalTime}}</h4>
                 </div>
             </section>
-        {{else}}
-            <h3 class="text-center">Please Select or Add Project from the Menu on the left.</h3>
-        {{/if}}
 
+            <hr/>
 
-        <hr/>
-
-        <ul class="list-group">
-            {{#each tasks}}
-                <li class="list-group-item task-list">
-                    <section class="row">
-                        <div class="col-md-7">
-                            <div class="task-name">{{name}}</div>
-                            <p class="task-time">
-                                Time: {{taskTotalTimeText _id}}
-                                <button type="button" class="btn btn-primary btn-xs note" data-toggle="modal" data-target="#myModal-{{_id}}">
-                                    <i class="fa fa-sticky-note-o"></i> Notes
-                                </button>
-                            </p>
-                        </div>
-                        <div class="col-md-5 text-right">
-                            <button type="button" class="btn btn-primary delete-task" data-task_id="{{_id}}">
-                                Show Intervals
-                            </button>
-                        </div>
-                    </section>
-                </li>
-                {{#each taskIntervals _id}}
-                    <li class="list-group-item">
+            <ul class="list-group">
+                {{#each tasks}}
+                    <li class="list-group-item task-list">
                         <section class="row">
-                            <div class="col-md-1">
-                                <h5>Start:</h5>
+                            <div class="col-md-7">
+                                <div class="task-name">{{name}}</div>
+                                <p class="task-time">
+                                    Time: {{taskTotalTimeText _id}}
+                                    <button type="button" class="btn btn-primary btn-xs note" data-toggle="modal" data-target="#myModal-{{_id}}">
+                                        <i class="fa fa-sticky-note-o"></i> Notes
+                                    </button>
+                                </p>
                             </div>
-                            <div class="col-md-4">
-                                <div class="input-group datetimepicker">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                    <input class="interval-start form-control" type="text" value="{{humanDateTime start}}"/>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <h5>End:</h5>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="input-group datetimepicker">
-                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                    <input class="interval-end form-control" type="text" value="{{humanDateTime end}}"/>
-                                </div>
-                            </div>
-                            <div class="col-md-2 text-right">
-                                <button type="button" class="btn btn-danger">Delete</button>
+                            <div class="col-md-5 text-right">
+                                <button type="button" class="btn btn-primary delete-task" data-task_id="{{_id}}">
+                                    Show Intervals
+                                </button>
                             </div>
                         </section>
                     </li>
-                {{/each}}
-                <div class="modal fade" id="myModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">Notes for {{name}}</h4>
-                            </div>
-                            <div class="modal-body">
-                                <textarea class="form-control task-note-text" rows="6" data-task_id="{{_id}}">{{notes}}</textarea>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    {{#each taskIntervals _id}}
+                        <li class="list-group-item">
+                            <section class="row">
+                                <div class="col-md-1">
+                                    <h5>Start:</h5>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <input class="interval-start form-control" data-interval_id="{{_id}}"
+                                               type="datetime" value="{{humanDateTime start}}"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <h5>End:</h5>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group datetimepicker">
+                                        <input class="interval-end form-control" data-interval_id="{{_id}}"
+                                               type="datetime" value="{{humanDateTime end}}"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <h5>Time: {{intervalDuration}}</h5>
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    <button type="button" class="btn btn-danger">Delete</button>
+                                </div>
+                            </section>
+                        </li>
+                    {{/each}}
+                    <div class="modal fade" id="myModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Notes for {{name}}</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <textarea class="form-control task-note-text" rows="6" data-task_id="{{_id}}">{{notes}}</textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                {{/each}}
+            </ul>
+
+        {{else}}
+
+            <!-- ///////////////////////// Overall Selected ////////////////////////// -->
+            <section class="row project-header">
+                <div class="col-md-8">
+                    <span id="project-name">Overall Summaries</span>
                 </div>
+                <div class="col-md-4">
+                    <h4 class="text-right">Total Time: {{overallTotalTime}}</h4>
+                </div>
+            </section>
+
+            <hr/>
+
+            {{#each projects}}
+                <li class="list-group-item task-list">
+                    <section class="row">
+                        <div class="col-md-9">
+                            <h5><a href="#" class="goToProject" data-project_id="{{_id}}">{{name}}</a></h5>
+                        </div>
+                        <div class="col-md-3">
+                            <h5 class="text-right">Total Time: {{projectTotalTime _id}}</h5>
+                        </div>
+                    </section>
+                </li>
             {{/each}}
-        </ul>
+
+
+        {{/if}}
+
+
+
 
     </div>
 
