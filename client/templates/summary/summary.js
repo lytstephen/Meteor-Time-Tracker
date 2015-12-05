@@ -1,22 +1,27 @@
+var getNewDate = function(e) {
+  var field = $(e.target);
+
+  var apm = field.val().substring(15,17);
+  var date = field.val().substring(0,2);
+  var month = field.val().substring(3,5) - 1;
+  var year = '20' + field.val().substring(6,8);
+  var hour = field.val().substring(9,11);
+  var minute = field.val().substring(12,14);
+
+  if (apm === "PM" && hour != '12') {
+    hour = Number(hour) + 12;
+  }
+
+  return new Date(year, month, date, hour, minute, 0, 0);
+};
+
 Template.Summary.events({
 
   // -------- UPDATES ---------- //
   'change .interval-start': function(e) {
-    var field = $(e.target);
-    var currentIntervalId = field.data('interval_id');
 
-    var apm = field.val().substring(15,17);
-    var date = field.val().substring(0,2);
-    var month = field.val().substring(3,5) - 1;
-    var year = '20' + field.val().substring(6,8);
-    var hour = field.val().substring(9,11);
-    var minute = field.val().substring(12,14);
-
-    if (apm === "PM" && hour != '12') {
-      hour = Number(hour) + 12;
-    }
-
-    var newDate = new Date(year, month, date, hour, minute, 0, 0);
+    var currentIntervalId = $(e.target).data('interval_id');
+    var newDate = getNewDate(e);
     console.log(newDate);
 
     var operator = {$set: {start: newDate}};
@@ -29,6 +34,23 @@ Template.Summary.events({
       alert('start time cannot be greater than endtime');
     } else {
       Intervals.update(currentIntervalId, operator);
+    }
+  },
+
+
+  'change .interval-end': function(e) {
+
+    var currentIntervalId = $(e.target).data('interval_id');
+    var newDate = getNewDate(e);
+    console.log(newDate);
+
+    var operator = {$set: {end: newDate}};
+
+    if (newDate == 'Invalid Date') {
+      alert('Time not correctly formatted. Please enter time with this format:' +
+          ' 18/02/2015 09:31 PM');
+    } else {
+      Intervals.update(currentIntervalId, operator)
     }
   },
 
