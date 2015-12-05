@@ -40,7 +40,7 @@ Template.Summary.events({
 
   'change .interval-end': function(e) {
 
-    var currentIntervalId = $(e.target).data('interval_id');
+    var intervalId = $(e.target).data('interval_id');
     var newDate = getNewDate(e);
     console.log(newDate);
 
@@ -50,7 +50,17 @@ Template.Summary.events({
       alert('Time not correctly formatted. Please enter time with this format:' +
           ' 18/02/2015 09:31 PM');
     } else {
-      Intervals.update(currentIntervalId, operator)
+      Intervals.update(intervalId, operator)
+    }
+  },
+
+
+  // -------- DELETE ----------- //
+  'click .delete-interval': function(e) {
+    var intervalId = $(e.target).data('interval_id');
+
+    if(confirm('Are you Sure')) {
+      Intervals.remove(intervalId);
     }
   },
 

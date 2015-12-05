@@ -74,7 +74,8 @@
                                 <div class="task-name">{{name}}</div>
                                 <p class="task-time">
                                     Time: {{taskTotalTimeText _id}}
-                                    <button type="button" class="btn btn-primary btn-xs note" data-toggle="modal" data-target="#myModal-{{_id}}">
+                                    <button type="button" class="btn btn-primary btn-xs note"
+                                            data-toggle="modal" data-target="#myModal-{{_id}}">
                                         <i class="fa fa-sticky-note-o"></i> Notes
                                     </button>
                                 </p>
@@ -112,7 +113,8 @@
                                         <h5>Time: {{intervalDuration}}</h5>
                                     </div>
                                     <div class="col-md-2 text-right">
-                                        <button type="button" class="btn btn-danger">Delete</button>
+                                        <button type="button" class="btn btn-danger delete-interval"
+                                                data-interval_id="{{_id}}">Delete</button>
                                     </div>
                                 </section>
                             </li>
@@ -122,11 +124,14 @@
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                     <h4 class="modal-title" id="myModalLabel">Notes for {{name}}</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <textarea class="form-control task-note-text" rows="6" data-task_id="{{_id}}">{{notes}}</textarea>
+                                    <textarea class="form-control task-note-text" rows="6" data-task_id="{{_id}}">
+                                        {{notes}}</textarea>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
