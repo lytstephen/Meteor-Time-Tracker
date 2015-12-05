@@ -257,3 +257,11 @@ Template.Dashboard.helpers({
 });
 
 // ------------------------------------------------------------------------------------
+
+Template.Dashboard.onCreated(function() {
+  Session.set('from', null);
+  Session.set('to', null);
+  Session.set('range', 'all');
+
+  console.log(Session.get('from'), Session.get('to'), Session.get('range'));
+});

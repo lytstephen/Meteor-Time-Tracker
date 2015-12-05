@@ -9,7 +9,7 @@
                 <option value="this-month" {{rangeSelected 'this-month'}}>This Month</option>
                 <option value="last-7" {{rangeSelected 'last-7'}}>Last 7 days</option>
                 <option value="last-30" {{rangeSelected 'last-30'}}>Last 30 days</option>
-                <option value="specify" {{rangeSelected 'specify'}}>Specify Custom Date Range</option>
+                <option value="specify" {{rangeSelected 'specify'}}>Custom Date Range</option>
             </select>
         </div>
 
@@ -20,7 +20,7 @@
                 <input type="text" class="form-control" id="date-picker-to">
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3" style="display: {{isSpecify}}">
             <button type="button" class="btn btn-primary" id="date-filter">Filter</button>
         </div>
 

@@ -82,8 +82,8 @@ Template.registerHelper('tasks', function() {
   return Tasks.find({projectId: currentProjectId}, {sort: {done: 1, order: 1}});
 });
 
-Template.registerHelper('taskTotalTimeText', function(taskId, from, to) {
-  var totalTime = Helper.taskTotalTime(taskId, from, to);
+Template.registerHelper('taskTotalTimeText', function(taskId) {
+  var totalTime = Helper.taskTotalTime(taskId);
   return Helper.msToTime(totalTime);
 });
 
