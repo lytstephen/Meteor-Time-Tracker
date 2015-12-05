@@ -32,7 +32,7 @@ Helper.taskTotalTime = function(taskId) {
   cursor.forEach(function(interval) {
 
     // has from and to
-    if (from && interval.end > from && to && interval.end > to) {
+    if (from && interval.end > from && to && interval.end < to) {
       calcInterval(interval);
 
       // has from no to

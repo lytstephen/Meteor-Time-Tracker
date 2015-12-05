@@ -22,7 +22,6 @@ Template.Summary.events({
 
     var currentIntervalId = $(e.target).data('interval_id');
     var newDate = getNewDate(e);
-    console.log(newDate);
 
     var operator = {$set: {start: newDate}};
     var endTime = Intervals.findOne(currentIntervalId).end;
@@ -42,7 +41,6 @@ Template.Summary.events({
 
     var intervalId = $(e.target).data('interval_id');
     var newDate = getNewDate(e);
-    console.log(newDate);
 
     var operator = {$set: {end: newDate}};
 
@@ -137,11 +135,33 @@ Template.Summary.events({
         setSessionRange(new Date().setDate(new Date().getDate() - 30), null, 'last-30');
         break;
       case 'specify':
-
+        Session.set('range', 'specify');
         break;
     }
+  },
 
-    console.log('from:' + Session.get('from'));
+  'click #date-filter': function(e) {
+
+    var fromField = $('#date-picker-from');
+    var toField = $('#date-picker-to');
+
+    var assignDate = function(field, type) {
+      var month = Number(field.val().substring(0,2)) -1;
+      var date = Number(field.val().substring(3,5));
+      var year = Number(field.val().substring(6,10));
+
+      if (type === 'to')
+        date = date + 1;
+
+      return new Date(year, month, date);
+    };
+
+    Session.set('from', assignDate(fromField).getTime());
+    if (toField.val()) {
+      Session.set('to', assignDate(toField, 'to').getTime());
+    } else {
+      Session.set('to', null)
+    }
   },
 
   'click .show-intervals': function(e) {
@@ -208,13 +228,17 @@ Template.Summary.helpers({
 
   rangeSelected: function(range) {
     return range === Session.get('range') ? 'selected' : ''
+  },
+
+  isSpecify: function() {
+    return Session.get('range') === 'specify' ? 'block' : 'none';
   }
 
 });
 
 
 Template.Summary.onRendered(function() {
-  this.$('.datetimepicker').datetimepicker();
+  $('.input-daterange').datepicker();
 });
 
 

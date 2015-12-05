@@ -1,3 +1,7 @@
 .intervalsDiv {
     display: none;
 }
+
+.datepicker {
+    font-size: 14px;
+}

@@ -13,8 +13,15 @@
             </select>
         </div>
 
-        <div class="col-md-9">
-            Select Time Widget Here.
+        <div class="col-md-6" style="display: {{isSpecify}}">
+            <div class="input-group input-daterange">
+                <input type="text" class="form-control" id="date-picker-from">
+                <span class="input-group-addon">to</span>
+                <input type="text" class="form-control" id="date-picker-to">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <button type="button" class="btn btn-primary" id="date-filter">Filter</button>
         </div>
 
     </section>
@@ -104,7 +111,7 @@
                                         <h5>End:</h5>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="input-group datetimepicker">
+                                        <div class="input-group">
                                             <input class="interval-end form-control" data-interval_id="{{_id}}"
                                                    type="datetime" value="{{humanDateTime end}}"/>
                                         </div>
