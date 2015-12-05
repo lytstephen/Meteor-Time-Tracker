@@ -80,42 +80,44 @@
                                 </p>
                             </div>
                             <div class="col-md-5 text-right">
-                                <button type="button" class="btn btn-primary delete-task" data-task_id="{{_id}}">
+                                <button type="button" class="btn btn-primary show-intervals" data-task_id="{{_id}}">
                                     Show Intervals
                                 </button>
                             </div>
                         </section>
                     </li>
-                    {{#each taskIntervals _id}}
-                        <li class="list-group-item">
-                            <section class="row">
-                                <div class="col-md-1">
-                                    <h5>Start:</h5>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                        <input class="interval-start form-control" data-interval_id="{{_id}}"
-                                               type="datetime" value="{{humanDateTime start}}"/>
+                    <div class="intervalsDiv" id="intervals-for-{{_id}}">
+                        {{#each taskIntervals _id}}
+                            <li class="list-group-item">
+                                <section class="row">
+                                    <div class="col-md-1">
+                                        <h5>Start:</h5>
                                     </div>
-                                </div>
-                                <div class="col-md-1">
-                                    <h5>End:</h5>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="input-group datetimepicker">
-                                        <input class="interval-end form-control" data-interval_id="{{_id}}"
-                                               type="datetime" value="{{humanDateTime end}}"/>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <input class="interval-start form-control" data-interval_id="{{_id}}"
+                                                   type="datetime" value="{{humanDateTime start}}"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <h5>Time: {{intervalDuration}}</h5>
-                                </div>
-                                <div class="col-md-2 text-right">
-                                    <button type="button" class="btn btn-danger">Delete</button>
-                                </div>
-                            </section>
-                        </li>
-                    {{/each}}
+                                    <div class="col-md-1">
+                                        <h5>End:</h5>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group datetimepicker">
+                                            <input class="interval-end form-control" data-interval_id="{{_id}}"
+                                                   type="datetime" value="{{humanDateTime end}}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <h5>Time: {{intervalDuration}}</h5>
+                                    </div>
+                                    <div class="col-md-2 text-right">
+                                        <button type="button" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </section>
+                            </li>
+                        {{/each}}
+                    </div>
                     <div class="modal fade" id="myModal-{{_id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">

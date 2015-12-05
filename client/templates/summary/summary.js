@@ -132,7 +132,15 @@ Template.Summary.events({
     }
 
     console.log('from:' + Session.get('from'));
+  },
+
+  'click .show-intervals': function(e) {
+    var taskId = $(e.target).data('task_id');
+    var intervalsDiv = $('#intervals-for-' + taskId);
+
+    intervalsDiv.toggle('fast');
   }
+
 });
 
 
